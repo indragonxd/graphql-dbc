@@ -1,0 +1,110 @@
+extend schema
+@link(url: "https://specs.apollo.dev/federation/v2.3",
+    import: ["@key","@extends","@external"])
+
+scalar Date
+scalar NonNegativeInt
+scalar DateTime
+
+
+"Cuenta de cliente"
+type Account{
+    "Id del cuenta"
+    id: ID,
+    "Número del cuenta"
+    number: String!,
+    "Saldo del cuenta"
+    balance: Float!,
+    "Currency del cuenta"
+    currency: String!,
+    "Movimientos de la cuenta"
+    transactions:[Transaction!]
+}
+type Dbc{
+    personId: ID,
+    customerType: CustomerType,
+    fatherLastName: String,
+    economicActivity: EconomicActivity,
+    bussinesOfficer: BussinesOfficer,
+    agency: Agency,
+    internalInformation: InternalInformation,
+    dpc: Dpc
+
+
+}
+type Gender{
+    code: String
+}
+type InternalInformation{
+    bankRelationship: BankRelationship
+}
+type BankRelationship{
+    code: String
+}
+type Agency{
+    code: String
+}
+type BussinesOfficer{
+    employedId: String
+}
+type EconomicActivity{
+     primary: EconomicActivityType,
+     secondary:EconomicActivityType,
+}
+type EconomicActivityType{
+    code: String
+}
+type CustomerType{
+    code: String
+}
+type Dpc{
+    personId: ID,
+    gender: Gender,
+    demographicInformation:DemographicInformation,
+    nationality:Nationality,
+    maritalStatus:MaritalStatus
+
+}
+type MaritalStatus{
+    code: String
+}
+type Nationality{
+    code: String
+}
+type DemographicInformation{
+    birthDate: String,
+    birthPlace: BirthPlace,
+}
+type BirthPlace{
+    code: String
+}
+type Customer @key(fields: "id") @extends {
+    "Id del Cliente"
+    id: ID @external,
+    "Cuentas del cliente"
+    accounts: [Account!]!
+}
+
+"Movimientos de una cuenta"
+type Transaction{
+    "Id del movimiento"
+    id: ID,
+    "Fecha y hora de transacción"
+    fecha: DateTime!,
+    "Monto del movimiento"
+    amount: Float!,
+}
+
+type Query{
+    "Buscar cuenta por ID"
+    account(id:ID): Account
+
+    "Buscar cuentas por customerId"
+    accountsByCustomer(filter:AccountsByCustomerFilter): [Account!]
+
+    dbc(id:ID): Dbc
+}
+
+input AccountsByCustomerFilter {
+    customerId: ID
+}
